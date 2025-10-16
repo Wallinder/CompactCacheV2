@@ -39,6 +39,7 @@ func (tq *TileQuery) bundleFilePath(size int) string {
 	buf[14] = hex[baseCol&0xF]
 
 	copy(buf[15:], ".bundle")
+
 	return string(buf[:])
 }
 
@@ -95,6 +96,8 @@ func openBundleFile(path string) (*os.File, error) {
 	return file, nil
 }
 
+var ErrEmpty = errors.New("EmptyTile")
+
 func (tq *TileQuery) GetCompactCache(size int, tileDir string) ([]byte, error) {
 	bundleFile := tq.bundleFilePath(size)
 
@@ -109,7 +112,7 @@ func (tq *TileQuery) GetCompactCache(size int, tileDir string) ([]byte, error) {
 	}
 
 	if tileSize == 0 {
-		return nil, errors.New("no tilecontent in bundle")
+		return nil, ErrEmpty
 	}
 
 	tileData, err := tq.getTileData(file, tileOffset, tileSize)
@@ -118,5 +121,4 @@ func (tq *TileQuery) GetCompactCache(size int, tileDir string) ([]byte, error) {
 	}
 
 	return tileData, nil
-
 }
