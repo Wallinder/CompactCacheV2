@@ -15,7 +15,6 @@ type TileQuery struct {
 func (tq *TileQuery) bundleFilePath(size int) string {
 	var buf [22]byte
 
-	zoom := tq.Z
 	baseRow := (tq.Y / size) * size
 	baseCol := (tq.X / size) * size
 
@@ -23,8 +22,8 @@ func (tq *TileQuery) bundleFilePath(size int) string {
 
 	buf[0] = '/'
 	buf[1] = 'L'
-	buf[2] = '0' + byte(zoom/10)
-	buf[3] = '0' + byte(zoom%10)
+	buf[2] = '0' + byte(tq.Z/10)
+	buf[3] = '0' + byte(tq.Z%10)
 
 	buf[4] = '/'
 	buf[5] = 'R'
