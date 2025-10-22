@@ -1,3 +1,5 @@
+//https://github.com/Esri/raster-tiles-compactcache
+
 package compact
 
 import (
