@@ -3,11 +3,11 @@
 package compact
 
 import (
-	"encoding/binary"
 	"errors"
 	"io"
 	"os"
 	"sync"
+	"unsafe"
 )
 
 type TileQuery struct {
@@ -56,20 +56,22 @@ func (tq *TileQuery) getTileData(file *os.File, tileOffset uint32, tileSize uint
 	return buffer, nil
 }
 
+type tileRecord struct {
+	Offset, Size uint32
+}
+
 func (tq *TileQuery) getTileRecord(file *os.File, size int) (uint32, uint32, error) {
 	tileIndexOffset := int64(64 + 8*(size*(tq.Y%size)+(tq.X%size)))
 
-	var buffer [8]byte
+	var record tileRecord
+	buffer := (*[8]byte)(unsafe.Pointer(&record))[:]
 
 	_, err := file.ReadAt(buffer[:], tileIndexOffset)
 	if err != nil && err != io.EOF {
 		return 0, 0, err
 	}
 
-	tileOffset := binary.LittleEndian.Uint32(buffer[0:4])
-	tileSize := binary.LittleEndian.Uint32(buffer[4:8])
-
-	return tileOffset, tileSize, nil
+	return record.Offset, record.Size, nil
 }
 
 var (
