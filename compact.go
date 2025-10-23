@@ -71,7 +71,7 @@ func (tq *TileQuery) getTileRecord(file *os.File, size int) (uint32, uint32, err
 		return 0, 0, err
 	}
 
-	return record.Offset, record.Size, nil
+	return record.Offset, record.Size >> 8, nil
 }
 
 var (
